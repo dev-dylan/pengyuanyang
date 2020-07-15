@@ -1,0 +1,76 @@
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>callapp-lib源码解析</title>
+  </head>
+  <body>
+    <button id="btn">点击打开/下载app</button>
+    <script src="https://unpkg.com/callapp-lib@2.1.5/dist/index.umd.min.js"></script>
+    <script>
+      const option = {
+        scheme: {
+          protocol: 'sabc98affa',
+          host: 'sensorsdata',
+        },
+        intent: {
+          package: 'com.sensorsdata.analytics.android.demo',
+          scheme: 'chenru',
+        },
+        universal: {
+          host: 'sachannledata.debugbox.sensorsdata.cn/sd/Vxe',
+          pathKey: 'action',
+        },
+        appstore: 'https://itunes.apple.com/cn/app/id432274380',
+        fallback: 'http://www.baidu.com',
+        timeout: 2000,
+      }
+      const callLib = new CallApp(option)
+
+      document.getElementById('btn').addEventListener('click', () => {
+        callLib.open({ path: 'sd/JOO/E0ijX1' })
+      })
+    </script>
+    <a href="sabc98affa://sensorsdata/sd/JOO/E0ijX1">点我</a>
+  </body>
+</html>
