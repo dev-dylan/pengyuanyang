@@ -42,7 +42,7 @@
   sdk_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/sensorsdata.min.js',
   heatmap_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/heatmap.min.js',
   name: 'sensors',
-  server_url: 'http://newsdktest.datasink.sensorsdata.cn/sa?project=pengyuanyang&token=5a394d2405c147ca',
+  server_url: 'https://satdemodata.debugbox.sensorsdata.cn/sa?project=default',
 <!--  use_app_track: true,-->
 <!--  app_js_bridge: false,-->
 
@@ -63,6 +63,17 @@
 });
   
   sensors.quick('autoTrack');
+  // 初始化深度链接插件
+  sensors.quick('useAppPlugin', {
+          deeplink: function(deeplink) {
+            deeplink.init({timeout: 2900}); // 等待唤起 App 的时间，默认 3000 ms
+            document.getElementById('openLink').addEventListener('click', function(e) {
+              e.preventDefault();
+              deeplink.openDeepLink();
+            });
+          }
+  });
+
 </script>
 </head>
 
@@ -73,6 +84,7 @@
 
 <div id="div" name="" >我是DIV2</div> 
 <div class="dbtn_accept1" id="login" data-sensors-click>点击我登录</div>
+<div class="dbtn_accept1" id="openLink" data-sensors-openLink>点击唤起应用</div>
 <div class="dbtn_accept1" id="div" data-sensors-click>我是DIV3</div>
 <div class="dbtn_accept1" id="logout" data-sensors-click>点我退出登录</div>
 <script>
