@@ -87,6 +87,7 @@
 <div class="dbtn_accept1" id="openLink" data-sensors-openLink>点击唤起应用</div>
 <div class="dbtn_accept1" id="bind" data-sensors-bind>绑定事件</div>
 <div class="dbtn_accept1" id="unbind" data-sensors-unbind>解绑事件</div>
+<div class="dbtn_accept1" id="normal" data-sensors-normal>普通事件</div>
 <div class="dbtn_accept1" id="div" data-sensors-click>我是DIV3</div>
 <div class="dbtn_accept1" id="logout" data-sensors-click>点我退出登录</div>
 <script>
@@ -114,6 +115,11 @@ document.getElementById("bind").onclick = function(){
 document.getElementById("unbind").onclick = function(){
   let content = document.getElementById("keyWord").value;
   sensors.track("$Unbind", {"content": content});
+}
+
+document.getElementById("normal").onclick = function(){
+  let content = document.getElementById("keyWord").value;
+  sensors.track("custom", {"content": content});
 }
 
 </script>
