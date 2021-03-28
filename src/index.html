@@ -42,7 +42,7 @@
   sdk_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/sensorsdata.min.js',
   heatmap_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/heatmap.min.js',
   name: 'sensors',
-  server_url: 'https://satdemodata.debugbox.sensorsdata.cn/sa?project=default',
+  server_url: 'http://newsdktest.datasink.sensorsdata.cn/sa?project=pengyuanyang&token=5a394d2405c147ca',
 <!--  use_app_track: true,-->
 <!--  app_js_bridge: false,-->
 
@@ -85,6 +85,8 @@
 <div id="div" name="" >我是DIV2</div> 
 <div class="dbtn_accept1" id="login" data-sensors-click>点击我登录</div>
 <div class="dbtn_accept1" id="openLink" data-sensors-openLink>点击唤起应用</div>
+<div class="dbtn_accept1" id="bind" data-sensors-bind>绑定事件</div>
+<div class="dbtn_accept1" id="unbind" data-sensors-unbind>解绑事件</div>
 <div class="dbtn_accept1" id="div" data-sensors-click>我是DIV3</div>
 <div class="dbtn_accept1" id="logout" data-sensors-click>点我退出登录</div>
 <script>
@@ -102,6 +104,14 @@ document.getElementById("login").onclick = function(){
 
 document.getElementById("logout").onclick = function(){
     sensors.logout();
+}
+
+document.getElementById("bind").onclick = function(){
+    sensors.track("$Bind");
+}
+
+document.getElementById("unbind").onclick = function(){
+  sensors.track("$Unbind");
 }
 
 </script>
