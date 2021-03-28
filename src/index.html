@@ -107,11 +107,13 @@ document.getElementById("logout").onclick = function(){
 }
 
 document.getElementById("bind").onclick = function(){
-    sensors.track("$Bind");
+    let content = document.getElementById("keyWord").value;
+    sensors.track("$Bind", {"content": content});
 }
 
 document.getElementById("unbind").onclick = function(){
-  sensors.track("$Unbind");
+  let content = document.getElementById("keyWord").value;
+  sensors.track("$Unbind", {"content": content});
 }
 
 </script>
