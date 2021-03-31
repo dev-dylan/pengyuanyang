@@ -86,7 +86,7 @@
 <div class="dbtn_accept1" id="bind" data-sensors-bind>点我绑定事件</div>
 <div class="dbtn_accept1" id="unbind" data-sensors-unbind>点我解绑事件</div>
 <div class="dbtn_accept1" id="normal" data-sensors-normal>点我触发普通事件</div>
-
+<div class="dbtn_accept1" id="profileset" data-sensors-normal>点我触发 ProfileSet 事件</div>
 <script>
 document.getElementById("div").onclick = function(){
   console.log("t123456");
@@ -126,6 +126,10 @@ document.getElementById("unbind").onclick = function(){
 
 document.getElementById("normal").onclick = function(){
   sensors.track("customEvent", {"customKey": "customValue"});
+}
+
+document.getElementById("profileset").onclick = function(){
+  sensors.setProfile({"setKey": "setValue"});
 }
 
 </script>
