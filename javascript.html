@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>callapp-lib源码解析</title>
+</head>
+
+<body>
+  <button id='btn'>点击打开/下载app</button>
+</body>
+
+</html>
+
+<script>
+  testFunc();
+  function testFunc() {
+    var array = [];
+    array.push("http://www.baidu.com?tag=1");
+    array.push("http://www.baidu.com?tag=2");
+    array.push("http://www.baidu.com?tag=3");
+    array.push("http://www.baidu.com?tag=4");
+
+    let result = JSON.stringify(array);
+
+    console.log(array);
+    console.log("result" + result);
+
+  }
+</script>
