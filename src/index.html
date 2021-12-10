@@ -45,24 +45,24 @@
       heatmap_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/heatmap.min.js',
       name: 'sensors',
       server_url: 'http://10.129.128.64:8106/sa?project=default',
-< !--use_app_track: true, -->
-< !--app_js_bridge: false, -->
+      use_app_track: true,
+      app_js_bridge: false,
 
-    app_js_bridge : {
-      is_send: true,
-      white_list: ["https://newsdktest.datasink.sensorsdata.cn/sa?project=wangyangyang&token=5a394d2405c147ca", "http://10.120.149.211:8106/sa?project=default&token=schemaLimited-R1eEsWRx", "http://10.120.227.248:8106/sa?project=default"]
-    },
+      app_js_bridge: {
+        is_send: true,
+        white_list: ["https://newsdktest.datasink.sensorsdata.cn/sa?project=wangyangyang&token=5a394d2405c147ca", "http://10.120.149.211:8106/sa?project=default&token=schemaLimited-R1eEsWRx", "http://10.120.227.248:8106/sa?project=default"]
+      },
 
       heatmap: {
-      custom_property: function (element_target) {
-        return {
-          $url: 'web的 url'
-        }
+        custom_property: function (element_target) {
+          return {
+            $url: 'web的 url'
+          }
+        },
+        clickmap: 'default',
+        scroll_notice_map: 'default',
       },
-      clickmap: 'default',
-      scroll_notice_map: 'default',
-    },
-});
+    });
 
     sensors.quick('autoTrack');
     // 初始化深度链接插件
