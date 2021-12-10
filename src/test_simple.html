@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script charset='UTF-8' src="https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.19.11/sensorsdata.min.js"></script>
+    <script>
+        var sensors = window['sensorsDataAnalytic201505'];
+        sensors.init({
+            server_url: 'https://newsdktest.datasink.sensorsdata.cn/sa?project=gongcheng&token=5a394d2405c147ca',
+            is_track_single_page: true, // 单页面配置，默认开启，若页面中有锚点设计，需要将该配置删除，否则触发锚点会多触发 $pageview 事件
+            use_client_time: true,
+            send_type: 'beacon',
+            app_js_bridge: true,
+            heatmap: {
+                //是否开启点击图，default 表示开启，自动采集 $WebClick 事件，可以设置 'not_collect' 表示关闭。
+                clickmap: 'default',
+                //是否开启触达注意力图，not_collect 表示关闭，不会自动采集 $WebStay 事件，可以设置 'default' 表示开启。
+                scroll_notice_map: 'not_collect'
+            }
+        });
+        sensors.quick('autoTrack');
+        //初始化深层链接插件
+        sensors.quick('useAppPlugin', {
+            deeplink: function (deeplink) {
+                deeplink.init({ timeout: 2900 });
+                document.getElementById('theBtn').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    deeplink.openDeepLink();
+                });
+            }
+        });
+
+    </script>
+    <meta charset="UTF-8">
+    <title>Web_test</title>
+</head>
+
+<body>
+    <p><a href="www.baidu.com">跳转到百度</a></p>
+    <p><button style="width: 800px;height: 800px;font-size: 200px">button</button></p>
+    <p><button id="track" style="width: 300px;height: 300px;font-size: 100px">track</button></p>
+    <p><button id="login" style="width: 300px;height: 300px;font-size: 100px">login</button></p>
+    <p><button id="logout" style="width: 300px;height: 300px;font-size: 100px">logout</button></p>
+    <p><button id="theBtn" style="width: 300px;height: 300px;font-size: 100px">deeplink</button></p>
+    <script>
+        document.getElementById("login").onclick = function () {
+
+            sensors.login('abcd1231123')
+        };
+        document.getElementById("logout").onclick = function () {
+            sensors.logout()
+        };
+        document.getElementById("track").onclick = function () {
+            sensors.track('track_test', {
+                'test1': 123,
+                'test2': '123',
+                'test3': [],
+                'test4': '',
+                'test5': null
+            });
+        };
+    </script>
+</body>
+
+</html>

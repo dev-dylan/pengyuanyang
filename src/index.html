@@ -20,51 +20,18 @@
       margin: 10px;
     }
   </style>
-  <script>
-    (function (para) {
-      var p = para.sdk_url, n = para.name, w = window, d = document, s = 'script', x = null, y = null;
-      if (typeof (w['sensorsDataAnalytic201505']) !== 'undefined') {
-        return false;
-      }
-      w['sensorsDataAnalytic201505'] = n;
-      w[n] = w[n] || function (a) { return function () { (w[n]._q = w[n]._q || []).push([a, arguments]); } };
-      var ifs = ['track', 'quick', 'register', 'registerPage', 'registerOnce', 'trackSignup', 'trackAbtest', 'setProfile', 'setOnceProfile', 'appendProfile', 'incrementProfile', 'deleteProfile', 'unsetProfile', 'identify', 'login', 'logout', 'trackLink', 'clearAllRegister', 'getAppStatus'];
-      for (var i = 0; i < ifs.length; i++) {
-        w[n][ifs[i]] = w[n].call(null, ifs[i]);
-      }
-      if (!w[n]._t) {
-        x = d.createElement(s), y = d.getElementsByTagName(s)[0];
-        x.async = 1;
-        x.src = p;
-        x.setAttribute('charset', 'UTF-8');
-        w[n].para = para;
-        y.parentNode.insertBefore(x, y);
-      }
-    })({
-      sdk_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/sensorsdata.min.js',
-      heatmap_url: 'https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.15.14/heatmap.min.js',
-      name: 'sensors',
-      server_url: 'http://10.129.128.64:8106/sa?project=default',
-      use_app_track: true,
-      app_js_bridge: false,
-
-      app_js_bridge: {
-        is_send: true,
-        white_list: ["https://newsdktest.datasink.sensorsdata.cn/sa?project=wangyangyang&token=5a394d2405c147ca", "http://10.120.149.211:8106/sa?project=default&token=schemaLimited-R1eEsWRx", "http://10.120.227.248:8106/sa?project=default"]
-      },
-
-      heatmap: {
-        custom_property: function (element_target) {
-          return {
-            $url: 'web的 url'
-          }
-        },
-        clickmap: 'default',
-        scroll_notice_map: 'default',
-      },
+  <script charset="UTF-8" src="https://cdn.jsdelivr.net/npm/sa-sdk-javascript@1.19.11/sensorsdata.min.js"></script>
+  <script charset="UTF-8">
+    var sensors = window['sensorsDataAnalytic201505'];
+    sensors.init({
+      server_url: 'http://newsdktest.datasink.sensorsdata.cn/sa?token=5a394d2405c147ca&project=pengyuanyang',
+      heatmap: { scroll_notice_map: 'not_collect' },
+      is_track_single_page: true,
+      use_client_time: true,
+      send_type: 'beacon'
     });
-
     sensors.quick('autoTrack');
+
     // 初始化深度链接插件
     sensors.quick('useAppPlugin', {
       deeplink: function (deeplink) {
