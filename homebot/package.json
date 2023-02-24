@@ -8,7 +8,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "base64-js": "^1.5.1",
     "js-base64": "^3.7.5",
+    "pako": "^2.1.0",
     "vue": "^3.2.45"
   },
   "devDependencies": {
