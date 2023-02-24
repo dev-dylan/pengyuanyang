@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>callapp-lib源码解析</title>
+</head>
+
+<body>
+  <textarea id='input' rows="30" cols="100" maxlength="5000"></textarea>
+  <button id='btn1' onclick='getTextArea()'>补充换行符</button>
+  <button id='btn2'>点击打开/下载app</button>
+  <label id='label1'>点击打开/下载app</label>
+</body>
+
+</html>
+
+<script>
+  
+  function getTextArea() {
+    // 获取textArea文本域的内容(value的值)
+      var res=document.getElementById("input").value;
+      // res=res.replace(/\n/g, "\r\n");
+      console.log(JSON.stringify(res));
+  }
+</script>
