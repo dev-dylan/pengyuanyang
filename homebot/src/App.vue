@@ -1,6 +1,5 @@
 <script setup>
-import Ungzip from './components/ungzip.vue'
-import Gzip from './components/gzip.vue'
+import Tools from './components/tools.vue'
 import TheWelcome from './components/TheWelcome.vue'
 function testFunc() {
   console.lo("这是一段字符串")
@@ -10,7 +9,7 @@ function testFunc() {
 
 <template>
   <main>
-    <Gzip />
+    <Tools />
   </main>
 </template>
 
