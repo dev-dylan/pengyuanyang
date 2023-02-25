@@ -1,9 +1,5 @@
 <script setup>
 import Tools from './components/tools.vue'
-import TheWelcome from './components/TheWelcome.vue'
-function testFunc() {
-  console.lo("这是一段字符串")
-}
 
 </script>
 
