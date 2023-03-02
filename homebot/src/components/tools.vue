@@ -35,12 +35,21 @@ function formatString() {
 
 function parseEncodeContent(input, mode) {
   var value = input
+  if (typeof value !== 'string') {
+    return "无效地图数据"
+  } 
   value = value.replace(/\\\\r\\\\n/g, '')
   value = value.replace(/\\r\\n/g, '')
+  value = value.replace(/\r\n/g, '')
   value = value.replace(/\\n/g, '')
+  value = value.replace(/\n/g, '')
   const bytes = toByteArray(value);
   const gizpData = pako.ungzip(bytes, { to: 'string' });
   
+  if (!isJsonString(gizpData)) {
+    return "无效地图数据"
+  }
+
   var obj = JSON.parse(gizpData)
   let width = obj.width
   let height = obj.height
@@ -57,28 +66,6 @@ function parseEncodeContent(input, mode) {
   return result
 }
 
-function handleBatchDownload() {
-  const data = ['各类地址1', '各类地址2'] // 需要下载打包的路径, 可以是本地相对路径, 也可以是跨域的全路径
-  const zip = new JSZip()
-  const cache = {}
-  const promises = []
-  data.forEach(item => {
-  const promise = getFile(item).then(data => { // 下载文件, 并存成ArrayBuffer对象
-   const arr_name = item.split("/")
-   const file_name = arr_name[arr_name.length - 1] // 获取文件名
-   zip.file(file_name, data, { binary: true }) // 逐个添加文件
-   cache[file_name] = data
-  })
-  promises.push(promise)
-  })
- 
-  Promise.all(promises).then(() => {
-  zip.generateAsync({type:"blob"}).then(content => { // 生成二进制流
-   FileSaver.saveAs(content, "地图打包数据.zip") // 利用file-saver保存文件
-  })
-  })
- }
-
 function parseJSONContent(jsonObj, mode) {
   let data = jsonObj.data
 
@@ -89,12 +76,17 @@ function parseJSONContent(jsonObj, mode) {
   let stain = parseEncodeContent(data.mapStain, mode)
   let obs = parseEncodeContent(data.mapObstacles, mode)
 
-  const zip = new JSZip()
-  zip.file('临时地图.txt', toByteArray(realTime), { binary: true }) // 逐个添加文件
-  
-  zip.generateAsync({type:"blob"}).then(content => { // 生成二进制流
-   FileSaver.saveAs(content, "地图打包数据.zip") // 利用file-saver保存文件
-  })
+  var zip = new JSZip();
+  zip.file("临时地图.txt", realTime);
+  zip.file("分区地图.txt", beau);
+  zip.file("家具地图.txt", furn);
+  zip.file("材质地图.txt", mat);
+  zip.file("污渍地图.txt", stain);
+  zip.file("障碍物地图.txt", obs);
+  zip.file("原始数据.text", JSON.stringify(jsonObj));
+  zip.generateAsync({type:"blob"}).then(function(content) {
+      saveAs(content, "地图压缩包.zip");
+  });
 }
 
 function ungzipAction(mode) {
@@ -228,7 +220,7 @@ function handleFileInput() {
     reader.onload = (e) => {
       console.log(e.target.result)
       let value = e.target.result
-      textdata = value
+      textdata.value = value
     }
     reader.readAsText(file)
   }
