@@ -4,7 +4,7 @@ import pako from 'pako';
 import { toByteArray, fromByteArray } from 'base64-js'
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip'
-import { read, writeFileXLSX} from 'xlsx'
+import { read, writeFileXLSX, utils } from 'xlsx'
 
 const textdata = ref(undefined)
 const decodeText = ref(undefined)
@@ -20,14 +20,14 @@ function gzipClick() {
 }
 
 function isJsonString(str) {
-      try {
-          if (typeof JSON.parse(str) == "object") {
-              return true;
-          }
-      } catch(e) {
-      }
-      return false;
+  try {
+    if (typeof JSON.parse(str) == "object") {
+      return true;
+    }
+  } catch (e) {
   }
+  return false;
+}
 
 function formatString() {
   var value = textdata.value
@@ -39,7 +39,7 @@ function parseEncodeContent(input, mode) {
   var value = input
   if (typeof value !== 'string') {
     return "无效地图数据"
-  } 
+  }
   value = value.replace(/\\\\r\\\\n/g, '')
   value = value.replace(/\\r\\n/g, '')
   value = value.replace(/\r\n/g, '')
@@ -51,7 +51,7 @@ function parseEncodeContent(input, mode) {
 
   const bytes = toByteArray(value);
   const gizpData = pako.ungzip(bytes, { to: 'string' });
-  
+
   if (!isJsonString(gizpData)) {
     return "无效地图数据"
   }
@@ -90,8 +90,8 @@ function parseJSONContent(jsonObj, mode) {
   zip.file("污渍地图.txt", stain);
   zip.file("障碍物地图.txt", obs);
   zip.file("原始数据.text", JSON.stringify(jsonObj));
-  zip.generateAsync({type:"blob"}).then(function(content) {
-      saveAs(content, "地图压缩包.zip");
+  zip.generateAsync({ type: "blob" }).then(function (content) {
+    saveAs(content, "地图压缩包.zip");
   });
 }
 
@@ -115,17 +115,17 @@ function positiveSequence(width, height, data) {
   for (var y = 0; y < maxY; y++) {
     for (var x = 0; x < maxX; x++) {
       let index = y * (maxX + 1) + x
-          let str = String(data[index])
-          let remind = 4 - str.length
-          result += str
-          for (var z = 0;z < remind; z++) {
-            result += " "
-          }
-          result += ","
+      let str = String(data[index])
+      let remind = 4 - str.length
+      result += str
+      for (var z = 0; z < remind; z++) {
+        result += " "
       }
-      result += "\n\n\n"
+      result += ","
     }
-    return result
+    result += "\n\n\n"
+  }
+  return result
 }
 // 反序格式化
 function negativeSequence(width, height, data) {
@@ -136,17 +136,17 @@ function negativeSequence(width, height, data) {
   for (var y = maxY; y >= 0; y--) {
     for (var x = 0; x < maxX; x++) {
       let index = y * (maxX + 1) + x
-          let str = String(data[index])
-          let remind = 4 - str.length
-          result += str
-          for (var z = 0;z < remind; z++) {
-            result += " "
-          }
-          result += ","
+      let str = String(data[index])
+      let remind = 4 - str.length
+      result += str
+      for (var z = 0; z < remind; z++) {
+        result += " "
       }
-      result += "\n\n\n"
+      result += ","
     }
-    return result
+    result += "\n\n\n"
+  }
+  return result
 }
 
 function mockData() {
@@ -191,17 +191,17 @@ function removeAllBlankLines(value) {
 }
 
 function ab2str(buf) {
-   return String.fromCharCode.apply(null, new Uint16Array(buf));
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
- 
+
 // 字符串转为ArrayBuffer对象，参数为字符串
 function str2ab(str) {
-    var buf = new ArrayBuffer(str.length*2); // 每个字符占用2个字节
-    var bufView = new Uint16Array(buf);
-    for (var i=0, strLen=str.length; i<strLen; i++) {
-         bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
+  var buf = new ArrayBuffer(str.length * 2); // 每个字符占用2个字节
+  var bufView = new Uint16Array(buf);
+  for (var i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
 }
 
 function saveTxt() {
@@ -214,67 +214,99 @@ function saveTxt() {
 }
 
 function handleFileInput() {
-    const file = fileInput.value.files[0]
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      console.log(e.target.result)
-      let value = e.target.result
-      textdata.value = value
-    }
-    reader.readAsText(file)
+  const file = fileInput.value.files[0]
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    console.log(e.target.result)
+    let value = e.target.result
+    textdata.value = value
   }
-  
+  reader.readAsText(file)
+}
+
 function selectFile() {
 
   fileInput.dispatchEvent(new MouseEvent('click111'))
 }
 
 function readFromLocalFile(file, callback) {
-    var reader = new FileReader()
-    reader.onload = function(e) {
-        var data = e.target.result;
-        var workbook = XLSX.read(data, {type: 'binary'});
-        if (callback) callback(workbook);
-    }
-    reader.readAsBinaryString(file);
+  var reader = new FileReader()
+  reader.onload = function (e) {
+    var data = e.target.result;
+    var workbook = XLSX.read(data, { type: 'binary' });
+    if (callback) callback(workbook);
+  }
+  reader.readAsBinaryString(file);
 }
 
 function hexToRGB() {
-    var value = textdata.value
-    var sColor = value.toLowerCase();
-    //十六进制颜色值的正则表达式
-    var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
-    // 如果是16进制颜色
-    if (sColor && reg.test(sColor)) {
-        if (sColor.length === 4) {
-            var sColorNew = "#";
-            for (var i=1; i<4; i+=1) {
-                sColorNew += sColor.slice(i, i+1).concat(sColor.slice(i, i+1));    
-            }
-            sColor = sColorNew;
-        }
-        //处理六位的颜色值
-        var sColorChange = [];
-        for (var i=1; i<7; i+=2) {
-            sColorChange.push(parseInt("0x"+sColor.slice(i, i+2)));    
-        }
-        decodeText.value = "RGB(" + sColorChange.join(",") + ")";
-        return
+  var value = textdata.value
+  var sColor = value.toLowerCase();
+  //十六进制颜色值的正则表达式
+  var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+  // 如果是16进制颜色
+  if (sColor && reg.test(sColor)) {
+    if (sColor.length === 4) {
+      var sColorNew = "#";
+      for (var i = 1; i < 4; i += 1) {
+        sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
+      }
+      sColor = sColorNew;
     }
-    decodeText.value = sColor;
+    //处理六位的颜色值
+    var sColorChange = [];
+    for (var i = 1; i < 7; i += 2) {
+      sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)));
+    }
+    decodeText.value = "RGB(" + sColorChange.join(",") + ")";
+    return
+  }
+  decodeText.value = sColor;
 }
 
 function openFile() {
-    document.getElementById("open").click();
-}
-function changeFile() {
-    const fu = document.getElementById("open");
-      if (fu == null) return;
-    //   fileInput = fu.files[0].name;
-      console.log(fu.files[0].name);
+  document.getElementById("open").click();
 }
 
-function readXLSX (file) {
+/**
+ * 上传事件
+ * @param {*} event 
+ */
+function changeFile(event) {
+  // console.log(event.target.value, event)
+  // 获取file对象
+  const files = event.target.files
+  if (files && files.length > 0) {
+    const file = files[0]
+
+    // 创建FileReader
+    const reader = new FileReader()
+
+    reader.onload = function (e) {
+      // console.log(e)
+      // 获取字节流
+      const data = e.target.result;
+      // 读取excel
+      const wb = read(data, {
+        type: 'binary'//以二进制的方式读取
+      });
+
+      // 获取json
+      console.log('XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]): ', utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
+
+
+    }
+
+    // 开始读文件
+    reader.readAsArrayBuffer(file)
+  }
+  // const fu = document.getElementById("open");
+  // if (fu == null) return;
+  // //   fileInput = fu.files[0].name;
+  // console.log(fu.files[0].name);
+}
+
+function readXLSX(file) {
   let nameSplit = file.name.split('.')
   let format = nameSplit[nameSplit.length - 1]
   if (!['xlsx', 'csv'].includes(format)) {
@@ -291,10 +323,32 @@ function readXLSX (file) {
   })
 }
 
-async function beforeUpload (file) {
-    const workbook = await readXLSX(file)
-    console.log(workbook)
-    return false
+async function beforeUpload(file) {
+  const workbook = await readXLSX(file)
+  console.log(workbook)
+  return false
+}
+
+/**
+ * 画地图
+ * @param {HTMLCanvasElement} canvas canvas元素
+ * @param {Number[]} data 地图点位数据
+ * @param {Number} width 地图宽度
+ * @param {Number} height 地图高度
+ */
+function drawMap(canvas, data, width, height) {
+  const context = canvas.getContext('2d'); //得到绘图的上下文环境
+  console.log(context);
+  // context.scale(1 / width, 1 / height);
+  context.fillStyle = 'black';
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i] === 100) {
+      const x = i % width;
+      const y = Math.floor(i / width);
+      context.fillRect(x, y, 1, 1);
+    }
+  }
 }
 
 </script>
@@ -304,7 +358,7 @@ async function beforeUpload (file) {
     将当前输入框内数据进行 Gzip 压缩和 Base64 处理、
     <textarea v-model="textdata" id="textArea" rows="15" cols="100" placeholder="请输入要压缩/解压数据"></textarea>
     <el-input placeholder="请选择文件" v-model="fileInput">
-        <d-button @click="openFile">请选择文件</d-button>
+      <d-button @click="openFile">请选择文件</d-button>
     </el-input>
     <input type="file" name="filename" id="open" @change="changeFile" />
     <Upload action="" :before-upload="beforeUpload">
@@ -319,10 +373,12 @@ async function beforeUpload (file) {
     <d-popover content="1. base64解码, 2. GZip 解压缩" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="ungzipClick(0)">解压缩数据(原始数据)</d-button>
     </d-popover>
-    <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左上坐标系格式输出" trigger="hover" style="background-color: #7693f5; color: #fff">
+    <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左上坐标系格式输出" trigger="hover"
+      style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="ungzipClick(1)">解压缩数据(正序格式化)</d-button>
     </d-popover>
-    <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左下坐标系格式输出" trigger="hover" style="background-color: #7693f5; color: #fff">
+    <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左下坐标系格式输出" trigger="hover"
+      style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="ungzipClick(2)">解压缩数据(反序格式化)</d-button>
     </d-popover>
     <d-popover content="1. base64 编码文本添加 \r\n 换行符" trigger="hover" style="background-color: #7693f5; color: #fff">
