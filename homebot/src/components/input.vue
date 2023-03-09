@@ -291,8 +291,10 @@ function changeFile(event) {
         type: 'binary'//以二进制的方式读取
       });
 
+      let json = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+
       // 获取json
-      console.log('XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]): ', utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
+      console.log('XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]): ', json);
 
 
     }
@@ -340,13 +342,15 @@ function drawMap(canvas, data, width, height) {
   const context = canvas.getContext('2d'); //得到绘图的上下文环境
   console.log(context);
   // context.scale(1 / width, 1 / height);
-  context.fillStyle = 'black';
-
+  
   for (let i = 0; i < data.length; i++) {
     if (data[i] === 100) {
       const x = i % width;
+      context.fillStyle = 'black';
       const y = Math.floor(i / width);
       context.fillRect(x, y, 1, 1);
+    } else {
+
     }
   }
 }

@@ -1,19 +1,26 @@
 <script setup>
 import Input from './input.vue'
+import Select from './select.vue'
 // import Select from './select.vue'
 import { ref } from 'vue'
 
-const menu = ref(undefined)
+const menu = ref("Input")
+
+function menuAciton(event) {
+  let key = event.key;
+  menu.value = key;
+}
 
 </script>
 
 <template>
   <div class="greetings">
-    <d-menu mode="horizontal" router=true>
+    <d-menu mode="horizontal" @select="menuAciton" v-model="menu">
     <d-menu-item key="Input"> 输入内容 </d-menu-item>
     <d-menu-item key="Select"> 选择文件 </d-menu-item>
   </d-menu>
-  <Input />
+    <template v-if ="menu=='Input'"><Input/></template>
+    <template v-if ="menu=='Select'"><Select/></template>
   </div>
 </template>
 
