@@ -4,7 +4,7 @@ import pako from 'pako';
 import { toByteArray, fromByteArray } from 'base64-js'
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip'
-import XLSX from 'xlsx/dist/xlsx.core.min.js'
+import { read, writeFileXLSX} from 'xlsx'
 
 const textdata = ref(undefined)
 const decodeText = ref(undefined)
@@ -31,7 +31,7 @@ function isJsonString(str) {
 
 function formatString() {
   var value = textdata.value
-  value = value.replace(/\\t|\\n|\\v|\\r|\\f/g, '\\r\\n');
+  value = value.replace(/\\t|\\n|\\v|\\r|\\f|\n|\r/g, '\r\n');
   decodeText.value = JSON.stringify(value)
 }
 
@@ -45,6 +45,10 @@ function parseEncodeContent(input, mode) {
   value = value.replace(/\r\n/g, '')
   value = value.replace(/\\n/g, '')
   value = value.replace(/\n/g, '')
+  console.log(value.length)
+
+  decodeText.value = value
+
   const bytes = toByteArray(value);
   const gizpData = pako.ungzip(bytes, { to: 'string' });
   
@@ -222,7 +226,7 @@ function handleFileInput() {
   
 function selectFile() {
 
-  fileInput.dispatchEvent(new MouseEvent('click'))
+  fileInput.dispatchEvent(new MouseEvent('click111'))
 }
 
 function readFromLocalFile(file, callback) {
@@ -260,21 +264,54 @@ function hexToRGB() {
     decodeText.value = sColor;
 }
 
+function openFile() {
+    document.getElementById("open").click();
+}
+function changeFile() {
+    const fu = document.getElementById("open");
+      if (fu == null) return;
+    //   fileInput = fu.files[0].name;
+      console.log(fu.files[0].name);
+}
+
+function readXLSX (file) {
+  let nameSplit = file.name.split('.')
+  let format = nameSplit[nameSplit.length - 1]
+  if (!['xlsx', 'csv'].includes(format)) {
+    return false
+  }
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader()
+    reader.readAsBinaryString(file)
+    reader.onload = function (evt) {
+      let data = evt.target.result // 读到的数据
+      var workbook = XLSX.read(data, { type: 'binary' })
+      resolve(workbook)
+    }
+  })
+}
+
+async function beforeUpload (file) {
+    const workbook = await readXLSX(file)
+    console.log(workbook)
+    return false
+}
+
 </script>
 
 <template>
   <div class="greetings">
     将当前输入框内数据进行 Gzip 压缩和 Base64 处理、
     <textarea v-model="textdata" id="textArea" rows="15" cols="100" placeholder="请输入要压缩/解压数据"></textarea>
-    <d-popover content="1. 读取本地文件并将内容写入输入框" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="readFromLocalFile">读取本地文件11</d-button>
-    </d-popover>
+    <el-input placeholder="请选择文件" v-model="fileInput">
+        <d-button @click="openFile">请选择文件</d-button>
+    </el-input>
+    <input type="file" name="filename" id="open" @change="changeFile" />
+    <Upload action="" :before-upload="beforeUpload">
+      <Button icon="ios-cloud-upload-outline">上传Excel文件</Button>
+    </Upload>
     <d-popover content="1. 保存当前返回值到本地 txt 文件中" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="saveTxt">保存 text 到本地</d-button>
-    </d-popover>
-    <input v-show=false type="file" ref="fileInput" @change="handleFileInput" />
-    <d-popover content="1. 读取本地文件并将内容写入输入框" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="selectFile">读取本地文件</d-button>
     </d-popover>
     <d-popover content="1. GZip压缩, 2. base64 编码" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="gzipClick">压缩数据</d-button>
