@@ -16,8 +16,8 @@ function menuAciton(event) {
 <template>
   <div class="greetings">
     <d-menu mode="horizontal" @select="menuAciton" v-model="menu">
-    <d-menu-item key="Input"> 输入内容 </d-menu-item>
-    <d-menu-item key="Select"> 选择文件 </d-menu-item>
+    <d-menu-item key="Input"> 手动输入地图内容 </d-menu-item>
+    <d-menu-item key="Select"> 解析 Excel 文件 </d-menu-item>
   </d-menu>
     <template v-if ="menu=='Input'"><Input/></template>
     <template v-if ="menu=='Select'"><Select/></template>

@@ -365,9 +365,6 @@ function drawMap(canvas, data, width, height) {
       <d-button @click="openFile">请选择文件</d-button>
     </el-input>
     <input type="file" name="filename" id="open" @change="changeFile" />
-    <Upload action="" :before-upload="beforeUpload">
-      <Button icon="ios-cloud-upload-outline">上传Excel文件</Button>
-    </Upload>
     <d-popover content="1. 保存当前返回值到本地 txt 文件中" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="saveTxt">保存 text 到本地</d-button>
     </d-popover>

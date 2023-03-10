@@ -4,34 +4,61 @@ import pako from 'pako';
 import { toByteArray, fromByteArray } from 'base64-js'
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip'
+import { read, writeFileXLSX, utils } from 'xlsx'
 
-const textdata = ref(undefined)
-const decodeText = ref(undefined)
-
+const excelContent = ref(undefined)
 const fileInput = ref(undefined)
 
-function gzipClick() {
-  let value = textdata.value
-  let result = pako.gzip(value)
-  let strin = fromByteArray(result)
-  console.log(JSON.stringify(strin))
-  decodeText.value = strin
+function parseExcel() {
+  let content = excelContent.value
+
+  if (typeof content !== 'string' || content.isEmpty) {
+    excelContent.value = "请先选择可用的 Excel 文件"
+    return
+  }
+
+  if (!isJsonString(content)) {
+    excelContent.value = "请先选择可用的 Excel 文件"
+    return
+  }
+
+  let array = JSON.parse(content)
+  parseJSONContent(array, 2)
 }
 
 function isJsonString(str) {
-      try {
-          if (typeof JSON.parse(str) == "object") {
-              return true;
-          }
-      } catch(e) {
-      }
-      return false;
+  try {
+    if (typeof JSON.parse(str) == "object") {
+      return true;
+    }
+  } catch (e) {
   }
+  return false;
+}
 
-function formatString() {
-  var value = textdata.value
-  value = value.replace(/\\t|\\n|\\v|\\r|\\f/g, '\\r\\n');
-  decodeText.value = JSON.stringify(value)
+function parseJSONContent(array, mode) {
+  var zip = new JSZip();
+  let res = zip.folder("所有地图数据")
+  array.forEach(element => {
+    let realTime = parseEncodeContent(element.map_real_time, mode)
+    let beau = parseEncodeContent(element.map_modification, mode)
+    let furn = parseEncodeContent(element.map_furnitures, mode)
+    let mat = parseEncodeContent(element.map_material, mode)
+    let stain = parseEncodeContent(element.map_stain, mode)
+    let obs = parseEncodeContent(element.map_obstacles, mode)
+    let map = res.folder(element.map_name + "「" + element.map_index + "」"  + "「" + element.update_time + "」");
+
+    map.file("临时地图.txt", realTime);
+    map.file("分区地图.txt", beau);
+    map.file("家具地图.txt", furn);
+    map.file("材质地图.txt", mat);
+    map.file("污渍地图.txt", stain);
+    map.file("障碍物地图.txt", obs);
+    map.file("原始数据.text", JSON.stringify(element));
+  });
+  zip.generateAsync({type:"blob"}).then(function(content) {
+        saveAs(content, "地图压缩包.zip");
+  });  
 }
 
 function parseEncodeContent(input, mode) {
@@ -67,40 +94,6 @@ function parseEncodeContent(input, mode) {
   return result
 }
 
-function parseJSONContent(jsonObj, mode) {
-  let data = jsonObj.data
-
-  let realTime = parseEncodeContent(data.mapRealTime, mode)
-  let beau = parseEncodeContent(data.mapModification, mode)
-  let furn = parseEncodeContent(data.mapFurnitures, mode)
-  let mat = parseEncodeContent(data.mapMaterial, mode)
-  let stain = parseEncodeContent(data.mapStain, mode)
-  let obs = parseEncodeContent(data.mapObstacles, mode)
-
-  var zip = new JSZip();
-  zip.file("临时地图.txt", realTime);
-  zip.file("分区地图.txt", beau);
-  zip.file("家具地图.txt", furn);
-  zip.file("材质地图.txt", mat);
-  zip.file("污渍地图.txt", stain);
-  zip.file("障碍物地图.txt", obs);
-  zip.file("原始数据.text", JSON.stringify(jsonObj));
-  zip.generateAsync({type:"blob"}).then(function(content) {
-      saveAs(content, "地图压缩包.zip");
-  });
-}
-
-function ungzipAction(mode) {
-  var value = textdata.value
-
-  let isJson = isJsonString(value)
-  if (isJson) {
-    parseJSONContent(JSON.parse(value), mode)
-  } else {
-    let result = parseEncodeContent(value, mode)
-    decodeText.value = result
-  }
-}
 // 正序格式化
 function positiveSequence(width, height, data) {
   var result = ""
@@ -122,6 +115,7 @@ function positiveSequence(width, height, data) {
     }
     return result
 }
+
 // 反序格式化
 function negativeSequence(width, height, data) {
   var result = ""
@@ -144,124 +138,46 @@ function negativeSequence(width, height, data) {
     return result
 }
 
-function mockData() {
-  ungzipAction(1)
-  let result = remainSingleBlankLine(decodeText.value)
-  decodeText.value = result
-}
+function changeFile(event) {
+  // 获取file对象
+  const files = event.target.files
+  if (files && files.length > 0) {
+    const file = files[0]
 
-function ungzipClick(mode) {
-  ungzipAction(mode)
-}
-
-function reserveSingleBlankLine() {
-  var value = textdata.value
-  console.log(value)
-  value = remainSingleBlankLine(value)
-  decodeText.value = value
-}
-
-function replaceToSeperator() {
-  var value = textdata.value
-  value = value.replace(/       /g, ',')
-  value = value.replace(/      /g, ',')
-  value = value.replace(/     /g, ',')
-  value = value.replace(/    /g, ',')
-  value = value.replace(/   /g, ',')
-  value = value.replace(/  /g, ',')
-  value = value.replace(/ /g, ',')
-  value = value.replace(/\t|\n|\r/g, ',')
-  let array = value.split(',')
-  decodeText.value = value
-}
-
-function remainSingleBlankLine(value) {
-  let result = value.replace(/\n\n\n\n\n/g, '\n').replace(/\n\n\n\n/g, '\n').replace(/\n\n\n/g, '\n').replace(/\n\n/g, '\n')
-  return result
-}
-
-function removeAllBlankLines(value) {
-  let result = value.replace(/\n\n\n\n\n/g, '').replace(/\n\n\n\n/g, '').replace(/\n\n\n/g, '').replace(/\n\n/g, '').replace(/\n/g, '')
-  return result
-}
-
-function ab2str(buf) {
-   return String.fromCharCode.apply(null, new Uint16Array(buf));
-}
- 
-// 字符串转为ArrayBuffer对象，参数为字符串
-function str2ab(str) {
-    var buf = new ArrayBuffer(str.length*2); // 每个字符占用2个字节
-    var bufView = new Uint16Array(buf);
-    for (var i=0, strLen=str.length; i<strLen; i++) {
-         bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-}
-
-function saveTxt() {
-  let str = decodeText.value
-  if (str.length <= 0) {
-    alert
-  }
-  let strData = new Blob([str], { type: 'text/plain;charset=utf-8' });
-  saveAs(strData, "测试文件下载.txt");
-}
-
-function handleFileInput() {
-    const file = fileInput.value.files[0]
+    // 创建FileReader
     const reader = new FileReader()
-    reader.onload = (e) => {
-      console.log(e.target.result)
-      let value = e.target.result
-      textdata.value = value
-    }
-    reader.readAsText(file)
-  }
-  
-function selectFile() {
 
-  fileInput.dispatchEvent(new MouseEvent('click'))
+    reader.onload = function (e) {
+      // console.log(e)
+      // 获取字节流
+      const data = e.target.result;
+      // 读取excel
+      const wb = read(data, {
+        type: 'binary'//以二进制的方式读取
+      });
+      let json = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      // 获取json
+      console.log('XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]): ', json);
+      excelContent.value = JSON.stringify(json)
+    }
+    // 开始读文件
+    reader.readAsArrayBuffer(file)
+  }
 }
 </script>
 
 <template>
   <div class="greetings">
     将当前输入框内数据进行 Gzip 压缩和 Base64 处理、
-    <textarea v-model="textdata" id="textArea" rows="15" cols="100" placeholder="请输入要压缩/解压数据"></textarea>
-    <d-popover content="1. 保存当前返回值到本地 txt 文件中" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="saveTxt">保存 text 到本地</d-button>
-    </d-popover>
-    <input v-show=false type="file" ref="fileInput" @change="handleFileInput" />
-    <d-popover content="1. 读取本地文件并将内容写入输入框" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="selectFile">读取本地文件</d-button>
-    </d-popover>
+    <el-input placeholder="请选择文件" v-model="fileInput">
+      <d-button @click="openFile"></d-button>
+    </el-input>
+    <input type="file" name="filename" id="open" @change="changeFile" />
     <d-popover content="1. GZip压缩, 2. base64 编码" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="gzipClick">压缩数据</d-button>
-    </d-popover>
-    <d-popover content="1. base64解码, 2. GZip 解压缩" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="ungzipClick(0)">解压缩数据(原始数据)</d-button>
-    </d-popover>
-    <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左上坐标系格式输出" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="ungzipClick(1)">解压缩数据(正序格式化)</d-button>
-    </d-popover>
-    <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左下坐标系格式输出" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="ungzipClick(2)">解压缩数据(反序格式化)</d-button>
-    </d-popover>
-    <d-popover content="1. base64 编码文本添加 \r\n 换行符" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="formatString">添加 "\r\n" 换行符</d-button>
-    </d-popover>
-    <d-popover content="1. 只保留一个换行符" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="reserveSingleBlankLine">移除多余空行</d-button>
-    </d-popover>
-    <d-popover content="1. 将空格和换行符替换为 , 分隔" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="replaceToSeperator">替换空格为逗号</d-button>
-    </d-popover>
-    <d-popover content="1. 组合动作" trigger="hover" style="background-color: #7693f5; color: #fff">
-      <d-button id="click" @click="mockData">组合动作：解压缩->正序格式化->去除多余空行</d-button>
+      <d-button id="click" @click="parseExcel">解析Excel 内容</d-button>
     </d-popover>
     <h3>返回值</h3>
-    <textarea v-model="decodeText" style="width:100%;height:400px"></textarea>
+    <textarea v-model="excelContent" style="width:100%;height:400px"></textarea>
   </div>
 </template>
 
