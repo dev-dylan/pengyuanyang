@@ -11,7 +11,6 @@ const fileInput = ref(undefined)
 
 function parseExcel() {
   let content = excelContent.value
-
   if (typeof content !== 'string' || content.isEmpty) {
     excelContent.value = "请先选择可用的 Excel 文件"
     return
@@ -40,6 +39,11 @@ function parseJSONContent(array, mode) {
   var zip = new JSZip();
   let res = zip.folder("所有地图数据")
   array.forEach(element => {
+
+    if (element.is_deleted === "1") {
+      return true;
+    }
+
     let realTime = parseEncodeContent(element.map_real_time, mode)
     let beau = parseEncodeContent(element.map_modification, mode)
     let furn = parseEncodeContent(element.map_furnitures, mode)
@@ -56,6 +60,8 @@ function parseJSONContent(array, mode) {
     map.file("障碍物地图.txt", obs);
     map.file("原始数据.text", JSON.stringify(element));
   });
+
+  res.file("excel数据.txt", JSON.stringify(array));
   zip.generateAsync({type:"blob"}).then(function(content) {
         saveAs(content, "地图压缩包.zip");
   });  
