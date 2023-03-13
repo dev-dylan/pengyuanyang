@@ -4,7 +4,7 @@ import Select from './select.vue'
 // import Select from './select.vue'
 import { ref } from 'vue'
 
-const menu = ref("Input")
+const menu = ref("Select")
 
 function menuAciton(event) {
   let key = event.key;
@@ -16,8 +16,8 @@ function menuAciton(event) {
 <template>
   <div class="greetings">
     <d-menu mode="horizontal" @select="menuAciton" v-model="menu">
+      <d-menu-item key="Select"> 解析 Excel 文件 </d-menu-item>
     <d-menu-item key="Input"> 手动输入地图内容 </d-menu-item>
-    <d-menu-item key="Select"> 解析 Excel 文件 </d-menu-item>
   </d-menu>
     <template v-if ="menu=='Input'"><Input/></template>
     <template v-if ="menu=='Select'"><Select/></template>
