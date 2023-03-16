@@ -361,10 +361,6 @@ function drawMap(canvas, data, width, height) {
   <div class="greetings">
     将当前输入框内数据进行 Gzip 压缩和 Base64 处理、
     <textarea v-model="textdata" id="textArea" rows="15" cols="100" placeholder="请输入要压缩/解压数据"></textarea>
-    <el-input placeholder="请选择文件" v-model="fileInput">
-      <d-button @click="openFile">请选择文件</d-button>
-    </el-input>
-    <input type="file" name="filename" id="open" @change="changeFile" />
     <d-popover content="1. 保存当前返回值到本地 txt 文件中" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="saveTxt">保存 text 到本地</d-button>
     </d-popover>
