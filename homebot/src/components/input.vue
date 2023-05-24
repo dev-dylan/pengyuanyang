@@ -355,6 +355,15 @@ function drawMap(canvas, data, width, height) {
   }
 }
 
+function testFormat() {
+  var value = textdata.value
+  
+  let arra = JSON.parse(value)
+  console.log(arra)
+  let res = positiveSequence(127,76, arra) 
+  decodeText.value = res
+}
+
 </script>
 
 <template>
@@ -392,6 +401,9 @@ function drawMap(canvas, data, width, height) {
     </d-popover>
     <d-popover content="1. 组合动作" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="hexToRGB">Hex 转 RGB </d-button>
+    </d-popover>
+    <d-popover content="1. 组合动作" trigger="hover" style="background-color: #7693f5; color: #fff">
+      <d-button id="click" @click="testFormat">测试内容 </d-button>
     </d-popover>
     <h3>返回值</h3>
     <textarea v-model="decodeText" style="width:100%;height:400px"></textarea>
