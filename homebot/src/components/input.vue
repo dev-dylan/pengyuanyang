@@ -104,6 +104,7 @@ function ungzipAction(mode) {
   } else {
     let result = parseEncodeContent(value, mode)
     decodeText.value = result
+    saveTxt()
   }
 }
 // 正序格式化
@@ -202,6 +203,11 @@ function str2ab(str) {
     bufView[i] = str.charCodeAt(i);
   }
   return buf;
+}
+
+function saveData() {
+  ungzipClick(2)
+  // saveTxt()
 }
 
 function saveTxt() {
@@ -368,15 +374,21 @@ function testFormat() {
 
 <template>
   <div class="greetings">
-    将当前输入框内数据进行 Gzip 压缩和 Base64 处理、
+    将当前输入框内数据进行 Gzip 压缩和 Base64 处理。
+    支持格式：
+    1. GZIP 压缩后的地图数据
+    2. getFull 接口全量报文
     <textarea v-model="textdata" id="textArea" rows="15" cols="100" placeholder="请输入要压缩/解压数据"></textarea>
     <d-popover content="1. 保存当前返回值到本地 txt 文件中" trigger="hover" style="background-color: #7693f5; color: #fff">
+      <d-button id="click" @click="saveData">解析数据并保存到本地</d-button>
+    </d-popover>
+    <!-- <d-popover content="1. 保存当前返回值到本地 txt 文件中" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="saveTxt">保存 text 到本地</d-button>
-    </d-popover>
-    <d-popover content="1. GZip压缩, 2. base64 编码" trigger="hover" style="background-color: #7693f5; color: #fff">
+    </d-popover> -->
+    <!-- <d-popover content="1. GZip压缩, 2. base64 编码" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="gzipClick">压缩数据</d-button>
-    </d-popover>
-    <d-popover content="1. base64解码, 2. GZip 解压缩" trigger="hover" style="background-color: #7693f5; color: #fff">
+    </d-popover> -->
+    <!-- <d-popover content="1. base64解码, 2. GZip 解压缩" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="ungzipClick(0)">解压缩数据(原始数据)</d-button>
     </d-popover>
     <d-popover content="1. base64解码, 2. GZip 解压缩, 3. 左上坐标系格式输出" trigger="hover"
@@ -404,7 +416,7 @@ function testFormat() {
     </d-popover>
     <d-popover content="1. 组合动作" trigger="hover" style="background-color: #7693f5; color: #fff">
       <d-button id="click" @click="testFormat">测试内容 </d-button>
-    </d-popover>
+    </d-popover> -->
     <h3>返回值</h3>
     <textarea v-model="decodeText" style="width:100%;height:400px"></textarea>
   </div>
