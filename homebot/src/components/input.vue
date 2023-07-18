@@ -46,7 +46,7 @@ function parseEncodeContent(input, mode) {
   value = value.replace(/\\n/g, '')
   value = value.replace(/\n/g, '')
   console.log(value.length)
-
+  value = replaceContent(value, "")
   decodeText.value = value
 
   const bytes = toByteArray(value);
@@ -167,17 +167,22 @@ function reserveSingleBlankLine() {
   decodeText.value = value
 }
 
+function replaceContent(input, replace) {
+  var value = input
+  value = value.replace(/       /g, replace)
+  value = value.replace(/      /g, replace)
+  value = value.replace(/     /g, replace)
+  value = value.replace(/    /g, replace)
+  value = value.replace(/   /g, replace)
+  value = value.replace(/  /g, replace)
+  value = value.replace(/ /g, replace)
+  value = value.replace(/\t|\n|\r/g, replace)
+  return value
+}
+
 function replaceToSeperator() {
   var value = textdata.value
-  value = value.replace(/       /g, ',')
-  value = value.replace(/      /g, ',')
-  value = value.replace(/     /g, ',')
-  value = value.replace(/    /g, ',')
-  value = value.replace(/   /g, ',')
-  value = value.replace(/  /g, ',')
-  value = value.replace(/ /g, ',')
-  value = value.replace(/\t|\n|\r/g, ',')
-  let array = value.split(',')
+  value = replaceContent(value, ",")
   decodeText.value = value
 }
 
