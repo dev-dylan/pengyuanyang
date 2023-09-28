@@ -1,0 +1,27 @@
+{
+	"logo": "logo.png",
+	"preload": "preload.js",
+	"features": [
+		{
+			"code": "parse_json",
+			"explain": "解析服务端 JSON",
+			"cmds": [
+				"解析服务端 JSON"
+			]
+		},
+		{
+			"code": "parse_gzip",
+			"explain": "解析 GZIP 文本",
+			"cmds": [
+				"解析 GZIP 文本"
+			]
+		},
+		{
+			"code": "parse_ros",
+			"explain": "解析 ROS 家具",
+			"cmds": [
+				"解析 ROS 家具"
+			]
+		}
+	]
+}
