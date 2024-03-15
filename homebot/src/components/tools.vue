@@ -1,5 +1,6 @@
 <script setup>
 import Input from './input.vue'
+import Bridge from './bridge.vue'
 import Select from './select.vue'
 import Ros from './ros.vue'
 import inputMuti from './inputMuti.vue'
