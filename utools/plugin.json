@@ -3,14 +3,45 @@
 	"preload": "preload.js",
 	"features": [
 		{
-			"code": "parse_log",
-			"explain": "解析日志",
+			"code": "getfull",
+			"explain": "解析地图接口数据",
 			"cmds": [
-				"机器人",
-				"homebot",
 				{
 					"type": "regex",
-					"label": "解析日志",
+					"label": "getfull",
+					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
+					"minLength": 2
+				}
+			]
+		},{
+			"code": "dividmerge",
+			"explain": "解析分割合并数据",
+			"cmds": [
+				{
+					"type": "regex",
+					"label": "dividmerge",
+					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
+					"minLength": 2
+				}
+			]
+		},{
+			"code": "requestparam",
+			"explain": "解析请求体",
+			"cmds": [
+				{
+					"type": "regex",
+					"label": "requestparam",
+					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
+					"minLength": 2
+				}
+			]
+		},{
+			"code": "getmaplist",
+			"explain": "解析地图列表",
+			"cmds": [
+				{
+					"type": "regex",
+					"label": "getmaplist",
 					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
 					"minLength": 2
 				}
