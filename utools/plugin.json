@@ -8,7 +8,7 @@
 			"cmds": [
 				{
 					"type": "regex",
-					"label": "getfull",
+					"label": "getfull 接口日志 or 报文",
 					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
 					"minLength": 2
 				}
@@ -19,7 +19,7 @@
 			"cmds": [
 				{
 					"type": "regex",
-					"label": "dividmerge",
+					"label": "分割合并接口请求入参",
 					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
 					"minLength": 2
 				}
@@ -30,7 +30,7 @@
 			"cmds": [
 				{
 					"type": "regex",
-					"label": "requestparam",
+					"label": "任意接口请求入参",
 					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
 					"minLength": 2
 				}
@@ -41,8 +41,18 @@
 			"cmds": [
 				{
 					"type": "regex",
-					"label": "getmaplist",
+					"label": "地图列表",
 					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
+					"minLength": 2
+				}
+			]
+		},{
+			"code": "decodegzip",
+			"explain": "直接解析压缩数据",
+			"cmds": [
+				{
+					"type": "over",
+					"label": "解压缩地图数据",
 					"minLength": 2
 				}
 			]

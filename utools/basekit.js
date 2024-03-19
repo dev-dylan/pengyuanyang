@@ -21,6 +21,10 @@ function replaceBlank(input, replacement) {
     return value;
 }
 
+function removeEscapeCharacters(str) {
+    return str.replace(/\\(?!n|r)/g, '');
+  }
+
 function isJsonString(input) {
     try {
         if (typeof JSON.parse(input) == "object") {
@@ -110,5 +114,7 @@ module.exports = {
     isJsonString,
     isObject,
     isArray,
-    sliceLogRaw
+    sliceLogRaw,
+    removeEscapeCharacters
+      
 };
