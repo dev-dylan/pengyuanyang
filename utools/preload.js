@@ -8,9 +8,11 @@ window.exports = {
 			// 进入插件应用时调用
 			enter: (action) => {
 				// action = { code, type, payload }
-				window.utools.hideMainWindow()
+				// window.utools.hideMainWindow()
+				window.utools.showNotification("解析完成");
+
 				homebot.handleDeviceMaps(action.payload);
-				window.utools.outPlugin()
+				// const utools = window.utools
 			}
 		}
 	}, "dividmerge": { // 注意：键对应的是 plugin.json 中的 features.code

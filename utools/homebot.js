@@ -54,46 +54,6 @@ function sliceLogResponse(input) {
     return basekit.sliceLogRaw(input, "result:");
 }
 
-// 解析整个地图 data 数据
-function handleAllMaps(mapItem, folderName, mode) {
-    let data = mapItem;;
-    if (data === undefined || data === null) {
-        showNotification("数据中不存在 data 字段，无法解析地图数据");
-        return
-    }
-    let realTime = encodeMapData(data.mapRealTime, mode)
-    let beau = encodeMapData(data.mapModification, mode)
-    let furn = encodeMapData(data.mapFurnitures, mode)
-    let mat = encodeMapData(data.mapMaterial, mode)
-    let stain = encodeMapData(data.mapStain, mode)
-    let obs = encodeMapData(data.mapObstacles, mode)
-
-    let dirPath = downloadsPath() + "/" + folderName
-
-    // 检查文件夹是否存在
-    if (fs.existsSync(dirPath)) {
-        // 存在则删除文件夹中的内容
-        fs.readdirSync(dirPath).forEach((file) => {
-            const filePath = path.join(dirPath, file);
-            fs.unlinkSync(filePath);
-        });
-    } else {
-        // 不存在则创建文件夹
-        fs.mkdirSync(dirPath);
-    }
-
-    let originData = {"code": 2000, "desc": "success", "data": data }
-    let origin = JSON.stringify(originData)
-    let maps = [realTime, beau, furn, mat, stain, obs, origin]
-    let names = ["临时地图", "分区地图", "家具地图", "材质地图", "障碍物地图", "污渍地图", "原始数据"]
-    maps.forEach((mapContent, index) => {
-        const fileName = `${names[index]}.txt`;
-        const filePath = `${dirPath}/${fileName}`;
-        fs.writeFileSync(filePath, mapContent);
-    });
-    shellOpenPath(dirPath);
-}
-
 // 解析单个地图的压缩数据
 function encodeMapData(input, mode) {
     let value = input;
@@ -205,7 +165,9 @@ function handleDeviceMaps(input) {
         showNotification("解析日志内容时出错，请检查");
         return;
     }
+    showNotification("2222222");
     let mapItem = JSON.parse(response).data;
+    console.log("3333333333");
     handleAllMaps(mapItem, "地图数据", 2)
 }
 
@@ -293,7 +255,7 @@ function handleAllMaps(mapItem, folderName, mode) {
     let mat = encodeMapData(data.mapMaterial, mode)
     let stain = encodeMapData(data.mapStain, mode)
     let obs = encodeMapData(data.mapObstacles, mode)
-
+    let carpet = encodeMapData(data.mapCarpet, mode)
     let dirPath = downloadsPath() + "/" + folderName
 
     // 检查文件夹是否存在
@@ -310,8 +272,8 @@ function handleAllMaps(mapItem, folderName, mode) {
 
     let originData = {"code": 2000, "desc": "success", "data": data }
     let origin = JSON.stringify(originData)
-    let maps = [realTime, beau, furn, mat, stain, obs, origin]
-    let names = ["临时地图", "分区地图", "家具地图", "材质地图", "障碍物地图", "污渍地图", "原始数据"]
+    let maps = [realTime, beau, furn, mat, stain, obs, carpet, origin]
+    let names = ["临时地图", "分区地图", "家具地图", "材质地图", "障碍物地图", "污渍地图", "地毯数据", "原始数据"]
     maps.forEach((mapContent, index) => {
         const fileName = `${names[index]}.txt`;
         const filePath = `${dirPath}/${fileName}`;

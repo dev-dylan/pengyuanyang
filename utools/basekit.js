@@ -21,9 +21,14 @@ function replaceBlank(input, replacement) {
     return value;
 }
 
+function removeSpacesCharacters(str) {
+    var pattern = /\s/g;
+    return str.replace(pattern, "");
+}
+
 function removeEscapeCharacters(str) {
     return str.replace(/\\(?!n|r)/g, '');
-  }
+}
 
 function isJsonString(input) {
     try {
@@ -39,9 +44,9 @@ function isObject(input) {
     try {
         if (typeof input === 'object' && input !== null) {
             return true;
-          } else {
+        } else {
             return false;
-          }          
+        }
     } catch (e) {
     }
     return false;
@@ -63,7 +68,7 @@ function isArray(input) {
 }
 
 function sliceLogRaw(input, start) {
-    let isJson = isJsonString(input)    
+    let isJson = isJsonString(input)
     if (!isJson) {
         console.log("截取原始日志错误，输入源不是 JSON String");
         return ""
@@ -80,7 +85,7 @@ function sliceLogRaw(input, start) {
     let stack = [];
     let brackets = ['{', '}', '[', ']', '(', ')'];
     let res = '';
-    
+
     console.log("ssssss");
     for (let i = startIndex; i < raw.length; i++) {
         const char = raw[i];
@@ -115,6 +120,6 @@ module.exports = {
     isObject,
     isArray,
     sliceLogRaw,
-    removeEscapeCharacters
-      
+    removeEscapeCharacters,
+    removeSpacesCharacters
 };
