@@ -10,6 +10,7 @@ const fileInput = ref(undefined)
 function saveData() {
   var value = textdata.value
   homebot.parseDeviceMaps(value)
+  console.log("测试内容")
 }
 
 /**
