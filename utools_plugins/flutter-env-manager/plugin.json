@@ -1,0 +1,15 @@
+{
+  "main": "index.html",
+  "logo": "logo.png",
+  "preload": "preload.js",
+  "features": [
+    {
+      "code": "flutter_env",
+      "explain": "Flutter环境变量管理",
+      "cmds": ["flutter环境", "flutter env", "flutter配置"]
+    }
+  ],
+  "name": "Flutter环境管理",
+  "version": "1.0.0",
+  "description": "一键切换Flutter环境变量配置"
+}

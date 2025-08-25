@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
+import AppLauncherExample from './components/AppLauncherExample.vue'
+import PageRedirectExample from './components/PageRedirectExample.vue'
 </script>
 
 <template>
@@ -12,6 +14,12 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  
+  <!-- App 启动器示例 -->
+  <AppLauncherExample />
+  
+  <!-- 页面重定向示例 -->
+  <PageRedirectExample />
 </template>
 
 <style scoped>
@@ -26,5 +34,18 @@ import HelloWorld from './components/HelloWorld.vue'
 }
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+
+.app-launcher-demo {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.app-launcher-demo h3 {
+  margin-bottom: 1rem;
+  color: #333;
 }
 </style>

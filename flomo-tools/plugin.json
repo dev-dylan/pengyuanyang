@@ -1,0 +1,18 @@
+{
+	"logo": "logo.png",
+	"preload": "preload.js",
+	"features": [
+		{
+			"code": "getfull",
+			"explain": "解析地图接口数据",
+			"cmds": [
+				{
+					"type": "regex",
+					"label": "getfull 接口日志 or 报文",
+					"match": "/^\\s*(\\{[\\s\\S]*\\}|\\[[\\s\\S]*\\])\\s*$/",
+					"minLength": 2
+				}
+			]
+		}
+	]
+}

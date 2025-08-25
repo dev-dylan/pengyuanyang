@@ -70,7 +70,6 @@ function parseDeviceMaps(input) {
     }
     parseAllMaps(JSON.parse(response), 2)
 }
-
 function parseAllMaps(jsonObj, mode) {
     let data = jsonObj.data
     let realTime = encodeMapData(data.mapRealTime, mode)
