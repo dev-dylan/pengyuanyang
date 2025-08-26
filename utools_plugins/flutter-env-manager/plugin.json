@@ -1,12 +1,12 @@
 {
-  "main": "index.html",
-  "logo": "logo.png",
   "preload": "preload.js",
+  "logo": "logo.png",
   "features": [
     {
       "code": "flutter_env",
-      "explain": "Flutter环境变量管理",
-      "cmds": ["flutter环境", "flutter env", "flutter配置"]
+      "explain": "Flutter环境变量切换",
+      "cmds": ["flutterenv"],
+      "direct": true
     }
   ],
   "name": "Flutter环境管理",

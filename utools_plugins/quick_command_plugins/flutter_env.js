@@ -46,7 +46,7 @@ function toggleFlutterConfig() {
     let found = false;
     let isCommented = false;
     let currentStatus = '';
-    
+
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].includes('#FLUTTER PUB 配置')) {
         found = true;
@@ -54,7 +54,7 @@ function toggleFlutterConfig() {
         if (i + 1 < lines.length) {
           isCommented = lines[i + 1].startsWith('#');
         }
-        
+
         // 标题行保持不变
         // 只修改后面两行的注释状态
         for (let j = i + 1; j < i + 3 && j < lines.length; j++) {
@@ -69,13 +69,13 @@ function toggleFlutterConfig() {
         break;
       }
     }
-    
+
     if (!found) {
       // 如果没找到配置，就添加到文件末尾
       lines.push(FLUTTER_CONFIG);
       isCommented = false; // 新添加的配置默认是启用状态
     }
-    
+
     fs.writeFileSync(ZSHRC_PATH, lines.join('\n'));
 
     // 执行 source ~/.zshrc 命令
@@ -87,11 +87,11 @@ function toggleFlutterConfig() {
 
     // 获取切换后的状态
     const newConfig = checkCurrentConfig();
-    
+
     return {
       success: true,
-      message: isCommented ? 
-        '已切换到国内源 (pub.flutter-io.cn)' : 
+      message: isCommented ?
+        '已切换到国内源 (pub.flutter-io.cn)' :
         '已切换到官方源 (pub.dev)',
       status: newConfig.status
     };
@@ -103,19 +103,6 @@ function toggleFlutterConfig() {
     };
   }
 }
-
-// 添加直接执行的处理函数
-window.exports = {
-  "flutter_env": {
-    mode: "none",
-    args: {
-      enter: (action) => {
-        const result = toggleFlutterConfig();
-        // 显示通知，包含当前状态
-        window.utools.showNotification(result.message + '\n' + result.status);
-        // 退出插件
-        window.utools.outPlugin();
-      }
-    }
-  }
-};
+const result = toggleFlutterConfig();
+utools.showNotification(result.message + '\n' + result.status);
+utools.outPlugin();
