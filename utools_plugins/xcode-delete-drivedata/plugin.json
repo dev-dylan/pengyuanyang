@@ -1,0 +1,20 @@
+{
+  "pluginName": "Xcode DerivedData 清理",
+  "description": "快速清理 Xcode DerivedData 文件夹",
+  "author": "pengyuanyang",
+  "homepage": "",
+  "version": "0.0.1",
+  "logo": "logo.png",
+  "preload": "preload.js",
+  "features": [
+    {
+      "code": "xcode_clean",
+      "explain": "清理 Xcode DerivedData",
+      "cmds": [
+        "xcode clean",
+        "清理 xcode",
+        "删除 deriveddata"
+      ]
+    }
+  ]
+}
