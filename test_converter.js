@@ -17,7 +17,12 @@ class AudioConfig {
 class OpusOggConverter {
     constructor(config = null) {
         this.config = config || new AudioConfig();
-        this.frameSize = Math.floor(this.config.sampleRate * this.config.frameDurationMs / 1000);
+        // Opus 内部采样率始终是 48kHz，用于计算 granule position
+        this.opusSampleRate = 48000;
+        // 输入采样率（用于 OpusHead）
+        this.inputSampleRate = this.config.sampleRate;
+        // 每帧的样本数（以 48kHz 为基准，用于 granule position）
+        this.frameSize = Math.floor(this.opusSampleRate * this.config.frameDurationMs / 1000);
         this.streamSerial = 0x12345678; // 流序列号
     }
 
@@ -118,33 +123,41 @@ class OpusOggConverter {
     
 
     /**
-     * 计算 CRC32 校验和
+     * 计算 CRC32 校验和（符合 libogg 实现，基于 OGG 规范 RFC 3533）
+     * libogg 使用正向 CRC（左移），多项式 0x04C11DB7，初始值为 0
+     * 参考：https://github.com/xiph/ogg/blob/master/src/framing.c
      * @param {Buffer} data - 要计算的数据
      * @returns {number} - CRC32 值
      */
     calculateCrc(data) {
-        // CRC32 查找表（一次性生成）
+        // 生成正向 CRC32 查找表（一次性生成，缓存）
+        // 使用多项式 0x04C11DB7（与 libogg 一致）
         if (!OpusOggConverter.crcTable) {
             OpusOggConverter.crcTable = [];
             for (let i = 0; i < 256; i++) {
-                let crc = i;
+                let crc = i << 24;
                 for (let j = 0; j < 8; j++) {
-                    crc = (crc & 1) ? (0xEDB88320 ^ (crc >>> 1)) : (crc >>> 1);
+                    if (crc & 0x80000000) {
+                        crc = ((crc << 1) ^ 0x04C11DB7) >>> 0;
+                    } else {
+                        crc = (crc << 1) >>> 0;
+                    }
                 }
                 OpusOggConverter.crcTable[i] = crc;
             }
         }
         const crcTable = OpusOggConverter.crcTable;
         
-        // OGG 使用 CRC32，初始值为 0
+        // OGG 规范要求：初始值为 0（与 libogg 的 ogg_page_checksum_set 一致）
         let crc = 0;
         
-        // 计算数据的 CRC
+        // libogg 风格的 CRC 更新：逐字节处理
+        // 公式：crc = (crc << 8) ^ crcTable[((crc >>> 24) & 0xFF) ^ byte]
         for (let i = 0; i < data.length; i++) {
-            crc = crcTable[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+            crc = ((crc << 8) ^ crcTable[((crc >>> 24) & 0xFF) ^ data[i]]) >>> 0;
         }
         
-        // 返回 CRC32 值（转换为无符号 32 位整数）
+        // 返回无符号 32 位整数
         return (crc >>> 0);
     }
 
@@ -187,17 +200,17 @@ class OpusOggConverter {
         header[26] = segmentCount; // 段数
         segmentTable.copy(header, 27); // 段表
 
-        // 计算CRC（参考 Python 版本：header[0:22] + 4字节0 + header[26:] + packet_data）
-        const crcData = Buffer.concat([
-            header.slice(0, 22), // 前22字节（不含CRC）
-            Buffer.from([0, 0, 0, 0]), // CRC字段设为0
-            header.slice(26), // segment_count + 段表（从位置26开始到末尾）
-            packetData // 包数据
-        ]);
+        // 根据 OGG 规范 (RFC 3533)，CRC 应该计算整个页面（包括完整的 header 和数据）
+        // 在计算时，CRC 字段（位置 22-25）必须设为 0
+        // 构建完整页面用于 CRC 计算
+        const fullPageForCrc = Buffer.concat([header, packetData]);
+        // 确保 CRC 字段为 0（虽然已经设为 0，但为了安全再次设置）
+        fullPageForCrc.writeUInt32LE(0, 22);
+        
+        // 计算整个页面的 CRC
+        const crcValue = this.calculateCrc(fullPageForCrc);
 
-        const crcValue = this.calculateCrc(crcData);
-
-        // 更新CRC字段
+        // 更新 header 中的 CRC 字段
         header.writeUInt32LE(crcValue, 22);
 
         // 构建完整页面
