@@ -59,6 +59,21 @@ class OpusOggConverter {
             }
 
             console.log(`成功读取 ${frames.length} 帧音频数据`);
+            
+            // 将所有帧数据拼接并写入 temp.opus 文件
+            if (frames.length > 0) {
+                const rawOpusData = Buffer.concat(frames);
+                // 将 temp.opus 保存到 test_output1 文件夹
+                const outputDir = path.join(__dirname, "test_output1");
+                if (!fs.existsSync(outputDir)) {
+                    fs.mkdirSync(outputDir, { recursive: true });
+                }
+                const tempFile = path.join(outputDir, "temp.opus");
+                fs.writeFileSync(tempFile, rawOpusData);
+                console.log(`已将裸 opus 数据流写入: ${tempFile}`);
+                console.log(`  数据大小: ${rawOpusData.length} 字节`);
+            }
+            
             return frames;
 
         } catch (error) {
@@ -99,6 +114,8 @@ class OpusOggConverter {
         
         return opusTags;
     }
+
+    
 
     /**
      * 计算 CRC32 校验和
@@ -152,7 +169,9 @@ class OpusOggConverter {
         const segmentTable = Buffer.from(segments);
         const segmentCount = segments.length;
 
-        // 构建页头
+        // 构建页头（参考 Python 版本实现）
+        // header 包含：OggS(4) + version(1) + header_type(1) + granule_pos(8) + 
+        //             stream_serial(4) + page_seq(4) + CRC(4) + segment_count(1) + segment_table(N)
         const header = Buffer.alloc(27 + segmentCount);
         header.write('OggS', 0); // 捕获模式
         header[4] = 0; // 版本
@@ -168,11 +187,11 @@ class OpusOggConverter {
         header[26] = segmentCount; // 段数
         segmentTable.copy(header, 27); // 段表
 
-        // 计算CRC（包括页头、段表和包数据，但CRC字段设为0）
+        // 计算CRC（参考 Python 版本：header[0:22] + 4字节0 + header[26:] + packet_data）
         const crcData = Buffer.concat([
             header.slice(0, 22), // 前22字节（不含CRC）
             Buffer.from([0, 0, 0, 0]), // CRC字段设为0
-            header.slice(26), // 段表
+            header.slice(26), // segment_count + 段表（从位置26开始到末尾）
             packetData // 包数据
         ]);
 
@@ -213,7 +232,7 @@ class OpusOggConverter {
             for (let i = 0; i < opusFrames.length; i++) {
                 const opusData = opusFrames[i];
                 
-                // 计算粒度位置
+                // 计算粒度位置（固定 20ms 每帧）
                 granulePos = (i + 1) * this.frameSize;
 
                 // 设置页面类型
@@ -263,6 +282,7 @@ class OpusOggConverter {
                 return false;
             }
 
+            // 计算时长（固定 20ms 每帧）
             const duration = opusFrames.length * this.config.frameDurationMs / 1000;
             console.log("音频信息:");
             console.log(`  - 总帧数: ${opusFrames.length}`);
@@ -387,22 +407,40 @@ function generateTestInput(outputFile, durationSeconds = 3) {
 function main() {
     const converter = new OpusOggConverter();
 
+    // 创建输出文件夹
+    const outputDir = path.join(__dirname, "test_output1");
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        console.log(`已创建输出文件夹: ${outputDir}`);
+    }
+
     // 文件路径
     const testInput = path.join(__dirname, "1.opus");
-    const testOutput = path.join(__dirname, "output_111.opus");
+    const testOutput = path.join(outputDir, "output_111.opus");
 
-    // 生成测试文件
+    // 生成测试文件（如果需要，也保存到输出文件夹）
     if (!fs.existsSync(testInput)) {
         console.log("生成测试输入文件...");
-        if (!generateTestInput(testInput, 2)) {
+        const testInputInOutput = path.join(outputDir, "test_input.dat");
+        if (!generateTestInput(testInputInOutput, 2)) {
             return;
+        }
+        // 如果生成了测试文件，使用输出文件夹中的文件
+        if (fs.existsSync(testInputInOutput)) {
+            console.log(`注意: 测试输入文件已生成在: ${testInputInOutput}`);
         }
     }
 
     // 检查输入文件
+    if (!fs.existsSync(testInput)) {
+        console.error(`错误: 输入文件不存在: ${testInput}`);
+        return;
+    }
+
     const fileSize = fs.statSync(testInput).size;
     console.log(`输入文件: ${testInput}`);
     console.log(`文件大小: ${fileSize} 字节`);
+    console.log(`输出文件夹: ${outputDir}`);
 
     // 执行转换
     console.log("\n开始转换处理...");

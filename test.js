@@ -12,9 +12,9 @@ function createOggContainer(opusData, sampleRate = 48000, channels = 1) {
     opusHead.write('OpusHead', 0); // Magic signature: 8 bytes
     opusHead[8] = 1; // Version
     opusHead[9] = channels; // Channel count
-    opusHead.writeUInt16LE(0, 10); // Pre-skip (2 bytes, little-endian)
+    opusHead.writeUInt16LE(3840, 10); // Pre-skip (2 bytes, little-endian) - Opus 标准值，用于处理编码延迟
     opusHead.writeUInt32LE(sampleRate, 12); // Input sample rate (4 bytes, little-endian)
-    opusHead.writeInt16LE(0, 16); // Output gain (2 bytes, little-endian)
+    opusHead.writeInt16LE(0, 16); // Output gain (2 bytes, little-endian) - 位置16，值为0表示无增益调整
     opusHead[18] = 0; // Channel mapping family
     
     // 创建 OpusTags 数据包
@@ -313,14 +313,22 @@ function convertRawOpusToPcm(rawOpusFile, outputPcmFile = null, useFFmpeg = true
 // 主函数
 // useFFmpeg: true 使用 ffmpeg，false 使用纯 JavaScript 方案
 function testFunc(useFFmpeg = false) {
-    // 获取 Downloads 文件夹路径
-    const downloadsPath = path.join(os.homedir(), "Downloads");
-    const inputFile = path.join(downloadsPath, "1.opus");
-    const outputFile = path.join(downloadsPath, "record_processed.opus");
+    // 创建输出文件夹
+    const outputDir = path.join(__dirname, "test_output2");
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        console.log(`已创建输出文件夹: ${outputDir}`);
+    }
+    
+    // 输入文件使用当前文件夹下的 1.opus
+    const inputFile = path.join(__dirname, "1.opus");
+    const outputFile = path.join(outputDir, "record_processed.opus");
 
     try {
         // 读取 opus 文件
-        console.log(`正在读取文件: ${inputFile}`);
+        console.log(`输入文件: ${inputFile}`);
+        console.log(`输出文件夹: ${outputDir}`);
+        console.log(`正在读取文件...`);
         const fileBuffer = fs.readFileSync(inputFile);
         console.log(`文件大小: ${fileBuffer.length} 字节`);
 
@@ -356,7 +364,7 @@ function testFunc(useFFmpeg = false) {
         console.log(`已保存处理后的文件: ${outputFile}`);
         
         // 将 opus 转换为标准的 ogg 音频文件
-        const oggOutputFile = path.join(downloadsPath, "record_processed.ogg");
+        const oggOutputFile = path.join(outputDir, "record_processed.ogg");
         
         // 固定参数：16kHz 采样率，单通道
         const SAMPLE_RATE = 16000;
@@ -396,7 +404,7 @@ function testFunc(useFFmpeg = false) {
         
         // 将处理后的裸 opus 文件转换为标准的 opus 文件（固定 16kHz 采样率，单通道）
         console.log("\n=== 将裸 opus 数据流转换为标准 opus 文件 ===");
-        const standardOpusFile = path.join(downloadsPath, "record_processed_standard.opus");
+        const standardOpusFile = path.join(outputDir, "record_processed_standard.opus");
         convertRawOpusToStandardOpus(outputFile, standardOpusFile, useFFmpeg);
         
     } catch (error) {
